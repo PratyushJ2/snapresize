@@ -1,0 +1,32 @@
+name: SnapResize CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Compose Stack
+        run: |
+          docker compose build
+          
+      - name: Smoke Test Services
+        run: |
+          docker compose up -d
+          # Wait a few seconds for services to initialize
+          sleep 5
+          # Check if backend health/endpoints respond
+          curl --fail http://localhost:8000/docs || exit 1
+          # Tear down containers
+          docker compose down
