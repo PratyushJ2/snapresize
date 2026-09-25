@@ -4,3 +4,4 @@ requests==2.31.0
 pillow==10.2.0
 redis==5.0.1
 python-multipart==0.0.9
+boto3==1.43.101

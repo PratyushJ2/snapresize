@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snapresize-backend-deployment
+  labels:
+    app: snapresize-backend
+spec:
+  replicas: 2  # Scaled to 2 pods for high availability!
+  selector:
+    matchLabels:
+      app: snapresize-backend
+  template:
+    metadata:
+      labels:
+        app: snapresize-backend
+    spec:
+      containers:
+      - name: backend
+        image: snapresize-backend:latest
+        imagePullPolicy: Never  # Uses local Docker image if testing via Minikube/Docker Desktop
+        ports:
+        - containerPort: 8000
+        env:
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: AWS_ACCESS_KEY_ID
+          value: "minioadmin"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "minioadmin"
+        - name: AWS_REGION
+          value: "us-east-1"
+        - name: S3_BUCKET_NAME
+          value: "snapresize-bucket"
+        - name: S3_ENDPOINT_URL
+          value: "http://host.docker.internal:9000"  # Connects to local MinIO if running desktop cluster
